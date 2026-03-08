@@ -3,165 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能单词本(自动翻译版)</title>
+    <title>我的专业单词本-终极版</title>
     <style>
         :root { --primary-color: #4a90e2; --bg-color: #f5f7fa; --text-color: #333; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary-color); margin-bottom: 15px; }
-        
-        /* 输入区域 */
-        .input-group { display: flex; gap: 10px; margin-bottom: 5px; }
-        input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 8px; outline: none; transition: 0.3s; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; }
+        .section-label { font-size: 12px; color: #888; margin-bottom: 5px; font-weight: bold; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { flex: 1; padding: 12px; border: 2px solid #edf2f7; border-radius: 10px; outline: none; transition: 0.3s; font-size: 16px; }
         input:focus { border-color: var(--primary-color); }
-        #add-btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
-        
-        /* 自动翻译提示 */
-        #trans-hint { font-size: 12px; color: #999; margin-bottom: 15px; height: 15px; }
-
-        /* 搜索框 */
-        .search-bar { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 20px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; padding-left: 40px; box-sizing: border-box; }
-
-        .toolbar { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .tool-btn { padding: 6px 12px; border: none; border-radius: 6px; background: #4caf50; color: white; font-size: 12px; cursor: pointer; }
-
-        .vocab-list { list-style: none; padding: 0; }
-        .vocab-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .vocab-item:hover { background-color: #f0f7ff; }
-        .en { font-weight: bold; font-size: 1.1em; }
-        .cn { color: #666; font-size: 0.9em; margin-top: 4px; }
-        .count-badge { background: #e1f5fe; color: #01579b; padding: 2px 10px; border-radius: 20px; font-size: 0.85em; }
-        .delete-btn { color: #ff5252; margin-left: 15px; font-weight: bold; }
+        .trans-edit-area { background: #fff9f0; padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ffeeba; }
+        #manual-cn { width: 100%; border: none; background: transparent; color: #856404; font-size: 15px; outline: none; padding: 5px 0; }
+        #add-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .search-bar { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #e2e8f0; border-radius: 12px; padding-left: 45px; box-sizing: border-box; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; }
+        .vocab-list { list-style: none; padding: 0; width: 100%; }
+        .vocab-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+        .vocab-item:hover { background-color: #f8faff; }
+        .en { font-weight: 700; font-size: 1.1em; color: #2d3748; }
+        .cn { color: #718096; font-size: 0.95em; margin-top: 4px; }
+        .count-badge { background: #ebf8ff; color: #3182ce; padding: 3px 10px; border-radius: 10px; font-size: 0.8em; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📓 智能单词本</h2>
+    <h2>📓 Smart Vocab</h2>
     
+    <div class="section-label">输入单词 (支持单词、词组)</div>
     <div class="input-group">
-        <input type="text" id="en-input" placeholder="输入英文单词 (按回车翻译)" autocomplete="off">
-        <button id="add-btn">确认添加</button>
+        <input type="text" id="en-input" placeholder="输入英文，例如 contract" autocomplete="off">
     </div>
-    <div id="trans-hint">自动翻译结果：<span id="auto-cn">等待输入...</span></div>
 
-    <input type="text" id="search-input" class="search-bar" placeholder="搜索已记录的单词...">
-
-    <div class="toolbar">
-        <button class="tool-btn" onclick="exportToWord()">📝 导出 Word 备份</button>
+    <div class="trans-edit-area">
+        <div class="section-label">中文释义 (可直接在此手动修改)</div>
+        <input type="text" id="manual-cn" placeholder="等待翻译...">
     </div>
+
+    <button id="add-btn">确认记录该单词</button>
+
+    <input type="text" id="search-input" class="search-bar" placeholder="在我的单词库中搜索...">
+    <button style="background:#eee; border:none; padding:5px 10px; border-radius:5px; font-size:12px; cursor:pointer;" onclick="exportToWord()">导出Word表格</button>
 
     <ul class="vocab-list" id="vocab-list"></ul>
 </div>
 
 <script>
+    // 1. 内置常用基础词库 (解决常见词查不到的问题)
+    const miniDict = {
+        "contract": "n. 合同，契约；v. 订立合同；收缩",
+        "volcano": "n. 火山",
+        "identity": "n. 身份；一致；特征",
+        "marketing": "n. 营销，市场推广",
+        "performance": "n. 性能；表演；执行",
+        "digital": "adj. 数字的；数码的",
+        "research": "n./v. 研究，调查"
+    };
+
     let words = JSON.parse(localStorage.getItem('myVocab')) || [];
-    let currentAutoTrans = "";
-
     const enInput = document.getElementById('en-input');
-    const autoCnSpan = document.getElementById('auto-cn');
-    const vocabList = document.getElementById('vocab-list');
-    const searchInput = document.getElementById('search-input');
+    const manualCn = document.getElementById('manual-cn');
 
-    // 1. 自动查询翻译 (当输入框失去焦点或按回车时)
-    enInput.addEventListener('blur', fetchTranslation);
-    enInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') fetchTranslation(); });
-
-    async function fetchTranslation() {
-        const word = enInput.value.trim();
-        if (!word) return;
+    // 2. 查词逻辑
+    enInput.addEventListener('input', async () => {
+        const word = enInput.value.trim().toLowerCase();
+        if (word.length < 1) { manualCn.value = ""; return; }
         
-        autoCnSpan.innerText = "查询中...";
+        // 优先从内置词库找
+        if (miniDict[word]) {
+            manualCn.value = miniDict[word];
+            return;
+        }
+
+        // 内置没有，去有道抓取 (增加备用跳转)
+        manualCn.value = "正在深度搜索...";
         try {
-            // 使用词道网公开 API
-            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-            const data = await response.json();
-            
-            if (data[0] && data[0].meanings) {
-                // 简单处理：获取第一个释义（此 API 返回英文解释，我们尝试寻找翻译或使用提示）
-                // 鉴于中文 API 稳定性，这里采用一种兼容方案：
-                const res = await fetch(`https://dict.youdao.com/suggest?q=${word}&num=1&doctype=json`);
-                const dictData = await res.json();
-                currentAutoTrans = dictData.data.entries[0].explain;
-                autoCnSpan.innerText = currentAutoTrans;
+            const url = `https://dict.youdao.com/suggest?q=${word}&num=1&doctype=json`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.data && data.data.entries) {
+                manualCn.value = data.data.entries[0].explain;
+            } else {
+                manualCn.value = "未找到自动翻译，请手动输入";
             }
         } catch (e) {
-            autoCnSpan.innerText = "未找到翻译，请手动输入或重试";
+            manualCn.value = "网络波动，请手动录入意思";
         }
-    }
+    });
 
-    // 2. 渲染列表 (带搜索过滤)
+    // 3. 基础功能 (排序、显示、搜索)
     function renderList(filter = "") {
-        const filteredWords = words.filter(item => 
-            item.en.toLowerCase().includes(filter.toLowerCase()) || 
-            item.cn.toLowerCase().includes(filter.toLowerCase())
-        );
-
-        filteredWords.sort((a, b) => b.count - a.count);
-        vocabList.innerHTML = '';
-        
-        filteredWords.forEach((item) => {
-            const realIndex = words.indexOf(item);
+        const filtered = words.filter(w => w.en.toLowerCase().includes(filter.toLowerCase()) || w.cn.toLowerCase().includes(filter.toLowerCase()));
+        filtered.sort((a, b) => b.count - a.count);
+        const list = document.getElementById('vocab-list');
+        list.innerHTML = '';
+        filtered.forEach(item => {
+            const idx = words.indexOf(item);
             const li = document.createElement('li');
             li.className = 'vocab-item';
-            li.innerHTML = `
-                <div style="flex:1" onclick="handleItemClick(${realIndex})">
-                    <div class="en">${item.en} 🔊</div>
-                    <div class="cn">${item.cn}</div>
-                </div>
-                <div style="display:flex; align-items:center;">
-                    <span class="count-badge">${item.count}次</span>
-                    <span class="delete-btn" onclick="deleteWord(event, ${realIndex})">✕</span>
-                </div>
-            `;
-            vocabList.appendChild(li);
+            li.innerHTML = `<div onclick="speak('${item.en}', ${idx})"><div class="en">${item.en} 🔊</div><div class="cn">${item.cn}</div></div><span class="count-badge">${item.count}次</span>`;
+            list.appendChild(li);
         });
         localStorage.setItem('myVocab', JSON.stringify(words));
     }
 
-    // 3. 点击发音与计数
-    function handleItemClick(index) {
-        const msg = new SpeechSynthesisUtterance(words[index].en);
-        msg.lang = 'en-US';
-        window.speechSynthesis.speak(msg);
-        words[index].count += 1;
-        renderList(searchInput.value);
+    function speak(text, idx) {
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+        words[idx].count++;
+        renderList(document.getElementById('search-input').value);
     }
 
-    // 4. 添加单词
     document.getElementById('add-btn').onclick = () => {
         const en = enInput.value.trim();
-        const cn = currentAutoTrans || "待补充";
-        if (en) {
+        const cn = manualCn.value.trim();
+        if (en && cn && cn !== "正在深度搜索...") {
             words.push({ en, cn, count: 0 });
             renderList();
-            enInput.value = '';
-            autoCnSpan.innerText = '等待输入...';
-            currentAutoTrans = "";
+            enInput.value = ''; manualCn.value = ''; enInput.focus();
         }
     };
 
-    // 5. 搜索功能
-    searchInput.addEventListener('input', (e) => {
-        renderList(e.target.value);
-    });
-
-    // 删除与导出 (保留原有逻辑)
-    function deleteWord(event, index) {
-        event.stopPropagation();
-        if(confirm('删除这个词吗？')) { words.splice(index, 1); renderList(searchInput.value); }
-    }
+    document.getElementById('search-input').oninput = (e) => renderList(e.target.value);
 
     function exportToWord() {
-        let tableHtml = `<table border="1" style="border-collapse: collapse; width: 100%;"><tr><th>英文</th><th>中文</th><th>次数</th></tr>`;
-        words.forEach(item => { tableHtml += `<tr><td>${item.en}</td><td>${item.cn}</td><td align="center">${item.count}</td></tr>`; });
-        const sourceHTML = "<html><head><meta charset='utf-8'></head><body><h3>单词备份</h3>" + tableHtml + "</table></body></html>";
-        const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-        const a = document.createElement("a"); a.href = source; a.download = '单词本.doc'; a.click();
+        let html = `<table border="1"><tr><th>Word</th><th>Meaning</th><th>Times</th></tr>`;
+        words.forEach(w => html += `<tr><td>${w.en}</td><td>${w.cn}</td><td>${w.count}</td></tr>`);
+        const blob = new Blob(['<html><head><meta charset="utf-8"></head><body>'+html+'</body></html>'], {type:'application/msword'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='Vocab.doc'; a.click();
     }
 
     renderList();
 </script>
-
 </body>
 </html>
